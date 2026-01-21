@@ -1,0 +1,114 @@
+<nav
+  class="bg-background text-foreground border-b"
+  role="navigation"
+  aria-label="Main navigation"
+>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
+
+      <!-- Logo -->
+      <a
+        routerLink="/"
+        class="text-lg font-semibold tracking-tight hover:text-primary"
+      >
+        BlogApp
+      </a>
+
+      <!-- Navigation -->
+      <div class="flex items-center gap-2">
+
+        <!-- Blogs -->
+        <a
+          routerLink="/blogs"
+          routerLinkActive="text-primary"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+        >
+          Blogs
+        </a>
+
+        <!-- Photos -->
+        <a
+          routerLink="/photos"
+          routerLinkActive="text-primary"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+        >
+          Photos
+        </a>
+
+        <!-- Theme Toggle -->
+        <button
+          hlmBtn
+          buttonVariants="ghost"
+          size="icon"
+          (click)="toggleTheme()"
+          (keydown.enter)="toggleTheme()"
+          aria-label="Toggle dark mode"
+        >
+          @if (themeService.isDarkMode()) {
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+          } @else {
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </svg>
+          }
+        </button>
+
+        <!-- Auth Section -->
+        @if (authService.isAuthenticated()) {
+          <div class="flex items-center gap-2">
+
+            <!-- Avatar -->
+            <div
+              class="h-8 w-8 bg-primary text-primary-foreground"
+            >
+              {{ authService.userInitials() }}
+            </div>
+
+            <!-- Logout -->
+            <button
+              hlmBtn
+              buttonVariants="ghost"
+              size="sm"
+              (click)="onLogout()"
+              (keydown.enter)="onLogout()"
+              class="text-destructive hover:text-destructive"
+            >
+              Logout
+            </button>
+          </div>
+        } @else {
+          <a
+            routerLink="/auth/login"
+            class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+          >
+            Login
+          </a>
+        }
+      </div>
+    </div>
+  </div>
+</nav>

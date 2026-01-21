@@ -1,0 +1,51 @@
+<nav
+  aria-label="Pagination"
+  class="mt-8 flex items-center justify-center gap-2"
+>
+  <!-- Previous -->
+  <button
+    hlmBtn
+    buttonVariants="outline"
+    size="sm"
+    (click)="previousPage()"
+    (keydown.enter)="previousPage()"
+    [disabled]="!canGoPrevious()"
+    aria-label="Go to previous page"
+  >
+    Previous
+  </button>
+
+  <!-- Page Numbers -->
+  @for (page of pages(); track page) {
+    @if (page === -1) {
+      <span class="px-2 text-sm text-muted-foreground select-none">
+        …
+      </span>
+    } @else {
+      <button
+        hlmBtn
+        size="sm"
+        buttonVariants="isCurrentPage(page) ? 'default' : 'outline'"
+        (click)="goToPage(page)"
+        (keydown.enter)="goToPage(page)"
+        [attr.aria-label]="'Go to page ' + page"
+        [attr.aria-current]="isCurrentPage(page) ? 'page' : null"
+      >
+        {{ page }}
+      </button>
+    }
+  }
+
+  <!-- Next -->
+  <button
+    hlmBtn
+    buttonVariants="outline"
+    size="sm"
+    (click)="nextPage()"
+    (keydown.enter)="nextPage()"
+    [disabled]="!canGoNext()"
+    aria-label="Go to next page"
+  >
+    Next
+  </button>
+</nav>
