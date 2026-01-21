@@ -1,46 +1,43 @@
 import { TestBed } from '@angular/core/testing';
-
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { PhotoStateService } from './photo-state.service';
-import { IPhotoService } from '../inaterfaces/photo-service.interface';
+import { PHOTO_SERVICE } from '../tokens/photo.tokens';
 import { Album } from '../../../core/models/album.model';
 import { Photo } from '../../../core/models/photo.model';
-import { PHOTO_SERVICE } from '../tokens/photo.tokens';
 import { of, throwError } from 'rxjs';
 
-describe('PhotoStateService (with PHOTO_SERVICE token)', () => {
+describe('PhotoStateService (Vitest)', () => {
   let service: PhotoStateService;
-  let photoServiceMock: jasmine.SpyObj<IPhotoService>;
+  let photoServiceMock: {
+    getAlbums: ReturnType<typeof vi.fn>;
+    getAlbumById: ReturnType<typeof vi.fn>;
+    getPhotosByAlbumId: ReturnType<typeof vi.fn>;
+    getAllPhotos: ReturnType<typeof vi.fn>;
+  };
 
   const mockAlbums: Album[] = [
-    {
-      id: 1, title: 'Album 1',
-      userId: 0
-    },
-    {
-      id: 2, title: 'Album 2',
-      userId: 0
-    }
+    { id: 1, title: 'Album 1', userId: 1 },
+    { id: 2, title: 'Album 2', userId: 1 },
   ];
 
   const mockPhotos: Photo[] = [
     { id: 1, albumId: 1, title: 'Photo 1', url: 'url1', thumbnailUrl: 'thumb1' },
-    { id: 2, albumId: 1, title: 'Photo 2', url: 'url2', thumbnailUrl: 'thumb2' }
+    { id: 2, albumId: 1, title: 'Photo 2', url: 'url2', thumbnailUrl: 'thumb2' },
   ];
 
   beforeEach(() => {
-    // Create a type-safe mock of the interface
-    photoServiceMock = jasmine.createSpyObj<IPhotoService>('IPhotoService', [
-      'getAlbums',
-      'getAlbumById',
-      'getPhotosByAlbumId',
-      'getAllPhotos'
-    ]);
+    photoServiceMock = {
+      getAlbums: vi.fn(),
+      getAlbumById: vi.fn(),
+      getPhotosByAlbumId: vi.fn(),
+      getAllPhotos: vi.fn(),
+    };
 
     TestBed.configureTestingModule({
       providers: [
         PhotoStateService,
-        { provide: PHOTO_SERVICE, useValue: photoServiceMock } // Provide via token
-      ]
+        { provide: PHOTO_SERVICE, useValue: photoServiceMock },
+      ],
     });
 
     service = TestBed.inject(PhotoStateService);
@@ -50,97 +47,87 @@ describe('PhotoStateService (with PHOTO_SERVICE token)', () => {
     expect(service).toBeTruthy();
   });
 
-  it('loadAlbums() should update albums and isLoading', (done) => {
-    photoServiceMock.getAlbums.and.returnValue(of(mockAlbums));
+  it('loadAlbums() should populate albums', async () => {
+    photoServiceMock.getAlbums.mockReturnValue(of(mockAlbums));
 
     service.loadAlbums();
 
-    setTimeout(() => {
-      expect(service.albums()).toEqual(mockAlbums);
-      expect(service.isLoading()).toBeFalse();
-      expect(service.error()).toBeNull();
-      done();
-    }, 0);
+    await Promise.resolve();
+
+    expect(service.albums()).toEqual(mockAlbums);
+    expect(service.isLoading()).toBe(false);
+    expect(service.error()).toBeNull();
   });
 
-  it('loadAlbums() should handle error', (done) => {
-    const error = new Error('Network error');
-    photoServiceMock.getAlbums.and.returnValue(throwError(() => error));
+  it('loadAlbums() should handle error', async () => {
+    photoServiceMock.getAlbums.mockReturnValue(
+      throwError(() => new Error('Network error'))
+    );
 
     service.loadAlbums();
 
-    setTimeout(() => {
-      expect(service.albums()).toEqual([]);
-      expect(service.isLoading()).toBeFalse();
-      expect(service.error()).toBe('Network error');
-      done();
-    }, 0);
+    await Promise.resolve();
+
+    expect(service.albums()).toEqual([]);
+    expect(service.isLoading()).toBe(false);
+    expect(service.error()).toBe('Network error');
   });
 
-  it('loadAlbumById() should update selectedAlbum', (done) => {
-    const album = mockAlbums[0];
-    photoServiceMock.getAlbumById.and.returnValue(of(album));
+  it('loadAlbumById() should set selectedAlbum', async () => {
+    photoServiceMock.getAlbumById.mockReturnValue(of(mockAlbums[0]));
 
     service.loadAlbumById(1);
 
-    setTimeout(() => {
-      expect(service.selectedAlbum()).toEqual(album);
-      expect(service.isLoading()).toBeFalse();
-      expect(service.error()).toBeNull();
-      done();
-    }, 0);
+    await Promise.resolve();
+
+    expect(service.selectedAlbum()).toEqual(mockAlbums[0]);
+    expect(service.error()).toBeNull();
   });
 
-  it('loadAlbumById() should handle error', (done) => {
-    const error = new Error('Album not found');
-    photoServiceMock.getAlbumById.and.returnValue(throwError(() => error));
+  it('loadAlbumById() should handle error', async () => {
+    photoServiceMock.getAlbumById.mockReturnValue(
+      throwError(() => new Error('Album not found'))
+    );
 
     service.loadAlbumById(999);
 
-    setTimeout(() => {
-      expect(service.selectedAlbum()).toBeNull();
-      expect(service.isLoading()).toBeFalse();
-      expect(service.error()).toBe('Album not found');
-      done();
-    }, 0);
+    await Promise.resolve();
+
+    expect(service.selectedAlbum()).toBeNull();
+    expect(service.error()).toBe('Album not found');
   });
 
-  it('loadPhotosByAlbumId() should update photos', (done) => {
-    photoServiceMock.getPhotosByAlbumId.and.returnValue(of(mockPhotos));
+  it('loadPhotosByAlbumId() should populate photos', async () => {
+    photoServiceMock.getPhotosByAlbumId.mockReturnValue(of(mockPhotos));
 
     service.loadPhotosByAlbumId(1);
 
-    setTimeout(() => {
-      expect(service.photos()).toEqual(mockPhotos);
-      expect(service.isLoading()).toBeFalse();
-      expect(service.error()).toBeNull();
-      done();
-    }, 0);
+    await Promise.resolve();
+
+    expect(service.photos()).toEqual(mockPhotos);
+    expect(service.error()).toBeNull();
   });
 
-  it('loadPhotosByAlbumId() should handle error', (done) => {
-    const error = new Error('Failed to load photos');
-    photoServiceMock.getPhotosByAlbumId.and.returnValue(throwError(() => error));
+  it('loadPhotosByAlbumId() should handle error', async () => {
+    photoServiceMock.getPhotosByAlbumId.mockReturnValue(
+      throwError(() => new Error('Failed to load photos'))
+    );
 
     service.loadPhotosByAlbumId(1);
 
-    setTimeout(() => {
-      expect(service.photos()).toEqual([]);
-      expect(service.isLoading()).toBeFalse();
-      expect(service.error()).toBe('Failed to load photos');
-      done();
-    }, 0);
+    await Promise.resolve();
+
+    expect(service.photos()).toEqual([]);
+    expect(service.error()).toBe('Failed to load photos');
   });
 
-  it('reset() should clear the state', () => {
-    // Set dummy state first
-    service.loadAlbums();
+  it('reset() should clear all state', () => {
     service.reset();
 
     expect(service.albums()).toEqual([]);
     expect(service.selectedAlbum()).toBeNull();
     expect(service.photos()).toEqual([]);
-    expect(service.isLoading()).toBeFalse();
+    expect(service.isLoading()).toBe(false);
     expect(service.error()).toBeNull();
   });
 });

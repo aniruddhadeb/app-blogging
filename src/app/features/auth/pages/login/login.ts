@@ -28,7 +28,6 @@ export interface LoginForm {
     HlmError,
     HlmLabel,
     HlmInput,
-    RouterLink
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
@@ -115,5 +114,8 @@ export class Login {
 
   private label(field: keyof LoginForm): string {
     return field[0].toUpperCase() + field.slice(1);
+  }
+  navigateToSignUp(): void {
+    this.router.navigate(['/auth/signup']);
   }
 }

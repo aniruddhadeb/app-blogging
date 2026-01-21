@@ -19,16 +19,14 @@ export class MockPhotoStateService implements IPhotoStateService {
 
   loadAlbums(): void {
     this._isLoading.set(true);
-    setTimeout(() => {
-      this._albums.set(TEST_ALBUMS);
-      this._isLoading.set(false);
-    }, 0);
+    this._albums.set(TEST_ALBUMS);
+    this._isLoading.set(false);
   }
 
   loadAlbumById(id: number): void {
     this._isLoading.set(true);
     setTimeout(() => {
-      const album = TEST_ALBUMS.find(a => a.id === id);
+      const album = TEST_ALBUMS.find((a) => a.id === id);
       this._selectedAlbum.set(album || null);
       this._isLoading.set(false);
     }, 0);
@@ -37,7 +35,7 @@ export class MockPhotoStateService implements IPhotoStateService {
   loadPhotosByAlbumId(albumId: number): void {
     this._isLoading.set(true);
     setTimeout(() => {
-      const albumPhotos = TEST_PHOTOS.filter(p => p.albumId === albumId);
+      const albumPhotos = TEST_PHOTOS.filter((p) => p.albumId === albumId);
       this._photos.set(albumPhotos);
       this._isLoading.set(false);
     }, 0);

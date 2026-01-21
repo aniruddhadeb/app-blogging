@@ -22,4 +22,12 @@ export class Navbar {
   toggleTheme(): void {
     this.themeService.toggleTheme();
   }
+
+  get isLoggedIn(): boolean {
+    return this.authService.isAuthenticated();
+  }
+
+  get initials(): string {
+    return this.authService.userInitials();
+  }
 }

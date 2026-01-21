@@ -5,6 +5,8 @@ import { IBlogStateService } from '../interfaces/blog-state-service.interface';
 import { BLOG_SERVICE } from '../tokens/blog.tokens';
 import { STORAGE_SERVICE } from '../../../core/tokens/service.tokens';
 import { catchError, of, tap } from 'rxjs';
+import { IBlogService } from '../interfaces/blog-service.interface';
+import { IStorageService } from '../../../core/interfaces/storage-service.interface';
 
 interface BlogState {
   posts: Post[];
@@ -20,8 +22,8 @@ interface BlogState {
 })
 
 export class BlogStateService implements IBlogStateService {
-  private readonly blogService = inject(BLOG_SERVICE);
-  private readonly storageService = inject(STORAGE_SERVICE);
+  private readonly blogService: IBlogService = inject(BLOG_SERVICE);
+  private readonly storageService: IStorageService = inject(STORAGE_SERVICE);
 
   // Private state signals
   private readonly state = signal<BlogState>({

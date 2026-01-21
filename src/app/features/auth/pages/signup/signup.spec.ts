@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Signup } from './signup';
 import { AUTH_SERVICE } from '../../../../core/tokens/service.tokens';
 import { MockAuthService } from '../../../../testing/mocks/auth-service.mock';
+import { of } from 'rxjs';
 
-describe('Signup (Vitest)', () => {
+describe('Signup', () => {
   let component: Signup;
   let fixture: ComponentFixture<Signup>;
   let authService: MockAuthService;
@@ -22,6 +23,13 @@ describe('Signup (Vitest)', () => {
       providers: [
         { provide: AUTH_SERVICE, useValue: authService },
         { provide: Router, useValue: router },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of({}),
+            snapshot: { params: {} },
+          },
+        }
       ],
     }).compileComponents();
 

@@ -1,16 +1,10 @@
-import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
-
 import { AddComment } from './add-comment';
 import { BLOG_STATE_SERVICE } from '../../tokens/blog.tokens';
 import { AUTH_SERVICE } from '../../../../core/tokens/service.tokens';
-
 import { TEST_USERS } from '../../../../testing/test-data/test-data';
 import { MockBlogStateService } from '../../../../testing/mocks/blog-state-service.mock';
 import { MockAuthService } from '../../../../testing/mocks/auth-service.mock';
@@ -20,12 +14,15 @@ describe('AddComment', () => {
   let component: AddComment;
   let blogState: MockBlogStateService;
   let authService: MockAuthService;
-  let router: jasmine.SpyObj<Router>;
+  let router: { navigate: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     blogState = new MockBlogStateService();
     authService = new MockAuthService();
-    router = jasmine.createSpyObj('Router', ['navigate']);
+
+    router = {
+      navigate: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [AddComment],
@@ -35,9 +32,9 @@ describe('AddComment', () => {
         { provide: Router, useValue: router },
         {
           provide: ActivatedRoute,
-          useValue: { params: of({ id: '1' }) }
-        }
-      ]
+          useValue: { params: of({ id: '1' }) },
+        },
+      ],
     }).compileComponents();
   });
 
@@ -62,12 +59,9 @@ describe('AddComment', () => {
 
       createComponent();
 
-      expect(component.commentForm.controls.name.value)
-        .toBe('John Doe');
-      expect(component.commentForm.controls.email.value)
-        .toBe('johndoe@example.com');
-      expect(component.commentForm.controls.body.value)
-        .toBe('');
+      expect(component.commentForm.controls.name.value).toBe('John Doe');
+      expect(component.commentForm.controls.email.value).toBe('johndoe@example.com');
+      expect(component.commentForm.controls.body.value).toBe('');
     });
 
     it('should start with empty fields when user is not logged in', () => {
@@ -94,8 +88,8 @@ describe('AddComment', () => {
     beforeEach(() => createComponent());
 
     it('should be invalid when empty', () => {
-      expect(component.commentForm.invalid).toBeTrue();
-      expect(component.isFormInvalid()).toBeTrue();
+      expect(component.commentForm.invalid).toBe(true);
+      expect(component.isFormInvalid()).toBe(true);
     });
 
     it('should validate name required', () => {
@@ -104,7 +98,7 @@ describe('AddComment', () => {
       name.setValue('');
       name.markAsTouched();
 
-      expect(name.hasError('required')).toBeTrue();
+      expect(name.hasError('required')).toBe(true);
       expect(component.getFieldError('name')).toBe('Name is required');
     });
 
@@ -114,7 +108,7 @@ describe('AddComment', () => {
       email.setValue('invalid');
       email.markAsTouched();
 
-      expect(email.hasError('email')).toBeTrue();
+      expect(email.hasError('email')).toBe(true);
     });
 
     it('should validate body minlength', () => {
@@ -123,9 +117,8 @@ describe('AddComment', () => {
       body.setValue('short');
       body.markAsTouched();
 
-      expect(body.hasError('minlength')).toBeTrue();
-      expect(component.getFieldError('body'))
-        .toContain('at least 10 characters');
+      expect(body.hasError('minlength')).toBe(true);
+      expect(component.getFieldError('body')).toContain('at least 10 characters');
     });
   });
 
@@ -138,27 +131,26 @@ describe('AddComment', () => {
     });
 
     it('should not submit invalid form', () => {
-      spyOn(blogState, 'addUserComment');
+      const spy = vi.spyOn(blogState, 'addUserComment');
 
       component.onSubmit();
 
-      expect(blogState.addUserComment).not.toHaveBeenCalled();
+      expect(spy).not.toHaveBeenCalled();
       expect(router.navigate).not.toHaveBeenCalled();
     });
 
     it('should submit valid comment and navigate', fakeAsync(() => {
-      spyOn(blogState, 'addUserComment');
+      const spy = vi.spyOn(blogState, 'addUserComment');
 
-      component.commentForm.controls.body
-        .setValue('This is a valid comment body');
+      component.commentForm.controls.body.setValue('This is a valid comment body');
 
       component.onSubmit();
 
-      expect(component.isSubmitting()).toBeTrue();
+      expect(component.isSubmitting()).toBe(true);
 
       tick(600);
 
-      expect(blogState.addUserComment).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
       expect(router.navigate).toHaveBeenCalledWith(['/blogs', 1]);
     }));
   });
@@ -185,6 +177,6 @@ describe('AddComment', () => {
 
   it('should start with isSubmitting false', () => {
     createComponent();
-    expect(component.isSubmitting()).toBeFalse();
+    expect(component.isSubmitting()).toBe(false);
   });
 });

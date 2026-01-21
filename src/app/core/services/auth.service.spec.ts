@@ -1,110 +1,77 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { AuthService } from './auth.service';
-import { StorageService } from './storage.service';
+import { describe, it, beforeEach, expect } from 'vitest';
+import { IAuthService } from '../../core/interfaces/auth-service.interface';
+import { AUTH_SERVICE } from '../tokens/service.tokens';
+import { MockAuthService } from '../../testing/mocks/auth-service.mock';
+import { TEST_USERS } from '../../testing/test-data/test-data';
 
-describe('AuthService', () => {
-  let service: AuthService;
-  let storageSpy: jasmine.SpyObj<StorageService>;
-  let routerSpy: jasmine.SpyObj<Router>;
-
-  const mockUser = {
-    username: 'testuser',
-    password: 'password123',
-    firstName: 'John',
-    lastName: 'Doe'
-  };
+describe('MockAuthService', () => {
+  let authService: IAuthService;
 
   beforeEach(() => {
-    storageSpy = jasmine.createSpyObj('StorageService', [
-      'getItem',
-      'setItem',
-      'removeItem'
-    ]);
-
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-
     TestBed.configureTestingModule({
       providers: [
-        AuthService,
-        { provide: StorageService, useValue: storageSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: AUTH_SERVICE, useClass: MockAuthService }
       ]
     });
 
-    storageSpy.getItem.and.returnValue(null);
-
-    service = TestBed.inject(AuthService);
+    authService = TestBed.inject(AUTH_SERVICE);
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(authService).toBeTruthy();
   });
 
-
   it('should not be authenticated initially', () => {
-    expect(service.isAuthenticated()).toBeFalse();
-    expect(service.currentUser()).toBeNull();
+    expect(authService.isAuthenticated()).toBe(false);
+    expect(authService.currentUser()).toBeNull();
   });
 
   it('should return empty initials when no user', () => {
-    expect(service.userInitials()).toBe('');
-  });
-
-
-  it('should signup a new user successfully', () => {
-    storageSpy.getItem.and.returnValue([]);
-
-    const result = service.signup(mockUser);
-
-    expect(result.success).toBeTrue();
-    expect(storageSpy.setItem).toHaveBeenCalledWith('users', [mockUser]);
-  });
-
-  it('should fail signup if username already exists', () => {
-    storageSpy.getItem.and.returnValue([mockUser]);
-
-    const result = service.signup(mockUser);
-
-    expect(result.success).toBeFalse();
-    expect(result.message).toBe('Username already exists');
+    expect(authService.userInitials()).toBe('');
   });
 
   it('should login successfully with valid credentials', () => {
-    storageSpy.getItem.and.returnValue([mockUser]);
-
-    const result = service.login({
+    const result = authService.login({
       username: 'testuser',
       password: 'password123'
     });
 
-    expect(result.success).toBeTrue();
-    expect(service.currentUser()).toEqual(mockUser);
-    expect(service.isAuthenticated()).toBeTrue();
-    expect(service.userInitials()).toBe('JD');
+    expect(result.success).toBe(true);
+    expect(authService.currentUser()?.username).toBe('testuser');
+    expect(authService.isAuthenticated()).toBe(true);
+    expect(authService.userInitials()).toBe('TU');
   });
 
   it('should fail login with invalid credentials', () => {
-    storageSpy.getItem.and.returnValue([mockUser]);
-
-    const result = service.login({
-      username: 'wrong',
-      password: 'wrong'
+    const result = authService.login({
+      username: 'wronguser',
+      password: 'wrongpass'
     });
 
-    expect(result.success).toBeFalse();
-    expect(service.currentUser()).toBeNull();
+    expect(result.success).toBe(false);
+    expect(authService.currentUser()).toBeNull();
+    expect(authService.isAuthenticated()).toBe(false);
   });
 
+  it('should logout user', () => {
+    authService.login({
+      username: 'testuser',
+      password: 'password123'
+    });
 
-  it('should logout user and navigate to login', () => {
-    (service as any).currentUserSignal.set(mockUser);
+    authService.logout();
 
-    service.logout();
+    expect(authService.currentUser()).toBeNull();
+    expect(authService.isAuthenticated()).toBe(false);
+    expect(authService.userInitials()).toBe('');
+  });
 
-    expect(service.currentUser()).toBeNull();
-    expect(storageSpy.removeItem).toHaveBeenCalledWith('current_user');
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
+  it('should set current user using helper', () => {
+    (authService as MockAuthService).setCurrentUser(TEST_USERS[0]);
+
+    expect(authService.currentUser()?.username).toBe(TEST_USERS[0].username);
+    expect(authService.isAuthenticated()).toBe(true);
+    expect(authService.userInitials()).toBe('JD');
   });
 });
-

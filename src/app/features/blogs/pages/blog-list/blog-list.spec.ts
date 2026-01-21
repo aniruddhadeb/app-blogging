@@ -1,12 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { BlogList } from './blog-list';
 import { BLOG_STATE_SERVICE } from '../../tokens/blog.tokens';
 import { MockBlogStateService } from '../../../../testing/mocks/blog-state-service.mock';
 import { TEST_POSTS } from '../../../../testing/test-data/test-data';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-import { fakeAsync, tick } from '@angular/core/testing';
 
 describe('BlogList', () => {
   let component: BlogList;
@@ -22,7 +21,10 @@ describe('BlogList', () => {
         { provide: BLOG_STATE_SERVICE, useValue: mockBlogState },
         {
           provide: ActivatedRoute,
-          useValue: { params: of({}), snapshot: { params: {} } },
+          useValue: {
+            params: of({}),
+            snapshot: { params: {} },
+          },
         },
       ],
     }).compileComponents();
@@ -37,19 +39,18 @@ describe('BlogList', () => {
 
   describe('Initialization', () => {
     it('should load posts on init', fakeAsync(() => {
-      spyOn(mockBlogState, 'loadPosts');
+      const loadSpy = vi.spyOn(mockBlogState, 'loadPosts');
 
       component.ngOnInit();
       tick();
 
-      expect(mockBlogState.loadPosts).toHaveBeenCalled();
+      expect(loadSpy).toHaveBeenCalled();
     }));
 
     it('should display loading state initially', fakeAsync(() => {
       fixture.detectChanges();
       tick();
 
-      // After loadPosts completes, loading should be false
       expect(mockBlogState.isLoading()).toBeFalsy();
     }));
   });
@@ -84,7 +85,7 @@ describe('BlogList', () => {
     });
 
     it('should handle page change', () => {
-      const scrollSpy = spyOn(window, 'scrollTo') as jasmine.Spy;
+      const scrollSpy = vi.spyOn(window, 'scrollTo');
 
       component.onPageChange(2);
 
@@ -113,7 +114,7 @@ describe('BlogList', () => {
   });
 
   describe('Error Handling', () => {
-    it('should display error message when posts fail to load', fakeAsync(() => {
+    it('should expose error message when posts fail to load', fakeAsync(() => {
       mockBlogState.setError('Failed to load posts');
       fixture.detectChanges();
       tick();

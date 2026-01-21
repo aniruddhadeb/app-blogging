@@ -8,7 +8,7 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AUTH_SERVICE } from '../../../../core/tokens/service.tokens';
 import { IAuthService } from '../../../../core/interfaces/auth-service.interface';
 import { HlmButton } from '@shared/ui/button';
@@ -37,7 +37,6 @@ interface SignupForm {
     HlmError,
     HlmLabel,
     HlmInput,
-    RouterLink,
   ],
   templateUrl: './signup.html',
   styleUrls: ['./signup.css'],
@@ -189,5 +188,8 @@ export class Signup {
       password: 'Password',
       confirmPassword: 'Confirm password',
     }[field];
+  }
+  navigateToLogin(): void {
+    this.router.navigate(['/auth/login']);
   }
 }

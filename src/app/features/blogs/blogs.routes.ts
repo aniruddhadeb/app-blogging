@@ -1,7 +1,4 @@
 import { Routes } from "@angular/router";
-import { BlogDetail } from "./pages/blog-detail/blog-detail";
-import { BlogList } from "./pages/blog-list/blog-list";
-import { BlogEditor } from "./pages/blog-editor/blog-editor";
 import { authGuard } from "../../core/guards/auth.guard";
 
 export const BLOG_ROUTES: Routes = [

@@ -7,7 +7,7 @@ import { PHOTO_STATE_SERVICE } from '../../tokens/photo.tokens';
 import { TEST_ALBUMS } from '../../../../testing/test-data/test-data';
 import { MockPhotoStateService } from '../../../../testing/mocks/photo-state-service.mock';
 
-describe('AlbumList (Vitest)', () => {
+describe('AlbumList', () => {
   let component: AlbumList;
   let fixture: ComponentFixture<AlbumList>;
   let mockPhotoState: MockPhotoStateService;
