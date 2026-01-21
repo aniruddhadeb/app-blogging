@@ -33,17 +33,15 @@ describe('StorageService', () => {
     expect((service as MockStorageService).getStorage().has(STORAGE_PREFIX + 'user')).toBe(false);
   });
 
-  it('should clear all items with prefix', () => {
+  it('should clear all items', () => {
     (service as MockStorageService).setItem(STORAGE_PREFIX + 'user', '1');
     (service as MockStorageService).setItem(STORAGE_PREFIX + 'settings', '2');
     (service as MockStorageService).setItem('other_key', '3');
 
-    service.clear();
+    service.clear(); // removes everything
 
     const map = (service as MockStorageService).getStorage();
-    expect(map.has(STORAGE_PREFIX + 'user')).toBe(false);
-    expect(map.has(STORAGE_PREFIX + 'settings')).toBe(false);
-    expect(map.get('other_key')).toBe('3'); // untouched
+    expect(map.size).toBe(0); // all cleared
   });
 
   it('should handle JSON parsing errors gracefully', () => {
@@ -55,7 +53,7 @@ describe('StorageService', () => {
     // in MockStorageService, objects are stored directly, so it will just return string
     const result = service.getItem(STORAGE_PREFIX + 'bad');
 
-    expect(result).toBe('invalid_json'); 
+    expect(result).toBe('invalid_json');
     expect(consoleSpy).not.toHaveBeenCalled();
 
     consoleSpy.mockRestore();

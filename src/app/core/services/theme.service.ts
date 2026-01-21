@@ -1,18 +1,19 @@
-import { effect, inject, Injectable, signal } from '@angular/core';
+import { effect, Inject, inject, Injectable, signal } from '@angular/core';
 import { StorageService } from './storage.service';
+import { STORAGE_SERVICE } from '../tokens/service.tokens';
+import { IStorageService } from '../interfaces/storage-service.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  private readonly storageService = inject(StorageService);
   private readonly THEME_KEY = 'theme';
-  
+
   isDarkMode = signal<boolean>(false);
 
-  constructor() {
+  constructor(@Inject(STORAGE_SERVICE) private readonly storageService: IStorageService) {
     this.loadTheme();
-    
+
     effect(() => {
       const isDark = this.isDarkMode();
       this.applyTheme(isDark);
@@ -34,6 +35,6 @@ export class ThemeService {
   }
 
   toggleTheme(): void {
-    this.isDarkMode.update(current => !current);
+    this.isDarkMode.update((current) => !current);
   }
 }

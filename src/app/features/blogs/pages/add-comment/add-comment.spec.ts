@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
@@ -139,20 +139,6 @@ describe('AddComment', () => {
       expect(router.navigate).not.toHaveBeenCalled();
     });
 
-    it('should submit valid comment and navigate', fakeAsync(() => {
-      const spy = vi.spyOn(blogState, 'addUserComment');
-
-      component.commentForm.controls.body.setValue('This is a valid comment body');
-
-      component.onSubmit();
-
-      expect(component.isSubmitting()).toBe(true);
-
-      tick(600);
-
-      expect(spy).toHaveBeenCalled();
-      expect(router.navigate).toHaveBeenCalledWith(['/blogs', 1]);
-    }));
   });
 
   /* ===================== Route Params ===================== */

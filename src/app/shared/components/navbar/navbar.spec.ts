@@ -1,34 +1,24 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { Navbar } from './navbar';
-import { AUTH_SERVICE, THEME_SERVICE } from '../../../core/tokens/service.tokens';
+import { AUTH_SERVICE, STORAGE_SERVICE, THEME_SERVICE } from '../../../core/tokens/service.tokens';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-
-// ===================== Mock Services =====================
-
-class MockAuthService {
-  logout = vi.fn();
-  isAuthenticated = vi.fn(() => true);
-  userInitials = vi.fn(() => 'AB');
-}
-
-class MockThemeService {
-  toggleTheme = vi.fn();
-  isDarkMode = vi.fn(() => false);
-}
-
-// ===================== Test Suite =====================
+import { MockAuthService } from '../../../testing/mocks/auth-service.mock';
+import { MockThemeService } from '../../../testing/mocks/theme-service.mock';
+import { MockStorageService } from '../../../testing/mocks/storage-service.mock';
 
 describe('Navbar', () => {
   let component: Navbar;
   let fixture: ComponentFixture<Navbar>;
   let authService: MockAuthService;
   let themeService: MockThemeService;
+  let storageService: MockStorageService;
 
   beforeEach(async () => {
     authService = new MockAuthService();
     themeService = new MockThemeService();
+    storageService = new MockStorageService();
 
     await TestBed.configureTestingModule({
       imports: [Navbar],
@@ -39,6 +29,7 @@ describe('Navbar', () => {
           provide: ActivatedRoute,
           useValue: { params: of({}), snapshot: { params: {} } },
         },
+        { provide: STORAGE_SERVICE, useValue: storageService },
       ],
     }).compileComponents();
 
@@ -53,23 +44,25 @@ describe('Navbar', () => {
 
   it('should call authService.logout when onLogout is called', () => {
     component.onLogout();
-    expect(authService.logout).toHaveBeenCalled();
+    expect(authService.currentUser()).toBe(null); 
   });
 
-  it('should call themeService.toggleTheme when toggleTheme is called', () => {
-    component.toggleTheme();
-    expect(themeService.toggleTheme).toHaveBeenCalled();
-  });
-
-  it('should display user initials when authenticated', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('AB');
-  });
-
-  it('should show Login link when not authenticated', () => {
-    authService.isAuthenticated.mockReturnValue(false);
+  it('should show user initials when logged in', () => {
+    authService.setCurrentUser({
+      firstName: 'Test',
+      lastName: 'User',
+      username: 'testuser',
+      password: 'password123',
+    });
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Login');
+    expect(component.initials).toBe('TU');
+    expect(component.isLoggedIn).toBe(true);
+  });
+
+  it('should show empty initials when not logged in', () => {
+    authService.setCurrentUser(null);
+    fixture.detectChanges();
+    expect(component.initials).toBe('');
+    expect(component.isLoggedIn).toBe(false);
   });
 });

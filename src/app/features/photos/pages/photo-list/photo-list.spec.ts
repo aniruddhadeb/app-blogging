@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
@@ -60,27 +60,26 @@ describe('PhotoList', () => {
 
   /* ===================== Initialization ===================== */
 
-  it('should load album and photos on init when albumId is present', fakeAsync(() => {
+  it('should load album and photos on init when albumId is present', () => {
     const albumSpy = vi.spyOn(photoState, 'loadAlbumById');
     const photosSpy = vi.spyOn(photoState, 'loadPhotosByAlbumId');
 
     component.ngOnInit();
     routeParams$.next({ albumId: '1' });
-    tick();
 
+    // Since your mock service is synchronous, no need to tick()
     expect(albumSpy).toHaveBeenCalledWith(1);
     expect(photosSpy).toHaveBeenCalledWith(1);
-  }));
+  });
 
-  it('should not load data if albumId is missing', fakeAsync(() => {
+  it('should not load data if albumId is missing', () => {
     const albumSpy = vi.spyOn(photoState, 'loadAlbumById');
 
     component.ngOnInit();
-    routeParams$.next({});
-    tick();
+    routeParams$.next({}); // empty params
 
     expect(albumSpy).not.toHaveBeenCalled();
-  }));
+  });
 
   /* ===================== Signals ===================== */
 
@@ -94,12 +93,11 @@ describe('PhotoList', () => {
   /* ===================== Pagination ===================== */
 
   describe('Pagination', () => {
-    beforeEach(fakeAsync(() => {
+    beforeEach(() => {
       photoState.setPhotos(TEST_PHOTOS);
       component.itemsPerPage.set(2);
-      fixture.detectChanges();
-      tick();
-    }));
+      fixture.detectChanges(); // triggers component updates
+    });
 
     it('should paginate photos correctly (page 1)', () => {
       component.currentPage.set(1);
@@ -178,21 +176,19 @@ describe('PhotoList', () => {
 
   /* ===================== Error State ===================== */
 
-  it('should expose error when state has error', fakeAsync(() => {
+  it('should expose error when state has error', () => {
     photoState.setError('Failed to load photos');
-    fixture.detectChanges();
-    tick();
+    fixture.detectChanges(); // update the component
 
     expect(component.error()).toBe('Failed to load photos');
-  }));
+  });
 
   /* ===================== Loading State ===================== */
 
-  it('should reflect loading state', fakeAsync(() => {
+  it('should reflect loading state', () => {
     photoState.setLoading(true);
-    fixture.detectChanges();
-    tick();
+    fixture.detectChanges(); // update component bindings
 
     expect(component.isLoading()).toBe(true);
-  }));
+  });
 });

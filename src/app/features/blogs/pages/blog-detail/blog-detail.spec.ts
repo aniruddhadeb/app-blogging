@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { BlogDetail } from './blog-detail';
 import { MockBlogStateService } from '../../../../testing/mocks/blog-state-service.mock';
@@ -49,50 +49,41 @@ describe('BlogDetail', () => {
   });
 
   describe('Initialization', () => {
-    it('should load post on init', fakeAsync(() => {
+    it('should load post on init', () => {
       const postSpy = vi.spyOn(mockBlogState, 'loadPostById');
       const commentsSpy = vi.spyOn(mockBlogState, 'loadComments');
 
       component.ngOnInit();
-      tick();
 
       expect(postSpy).toHaveBeenCalledWith(1);
       expect(commentsSpy).toHaveBeenCalledWith(1);
-    }));
+    });
 
-    it('should set postId from route params', fakeAsync(() => {
+    it('should set postId from route params', () => {
       component.ngOnInit();
-      tick();
-
       expect(component.postId()).toBe(1);
-    }));
+    });
 
-    it('should handle different post IDs from route', fakeAsync(() => {
+    it('should handle different post IDs from route', () => {
       mockActivatedRoute.params = of({ id: '42' });
-
       component.ngOnInit();
-      tick();
-
       expect(component.postId()).toBe(42);
-    }));
+    });
 
-    it('should not load if id is invalid', fakeAsync(() => {
+    it('should not load if id is invalid', () => {
       const spy = vi.spyOn(mockBlogState, 'loadPostById');
       mockActivatedRoute.params = of({ id: '0' });
 
       component.ngOnInit();
-      tick();
-
       expect(spy).not.toHaveBeenCalled();
-    }));
+    });
   });
 
   describe('Post Display', () => {
-    beforeEach(fakeAsync(() => {
+    beforeEach(() => {
       mockBlogState.setPosts([TEST_POSTS[0]]);
       fixture.detectChanges();
-      tick();
-    }));
+    });
 
     it('should expose post signal', () => {
       expect(component.post()).toBeDefined();
@@ -106,20 +97,17 @@ describe('BlogDetail', () => {
       expect(component.isLoading()).toBeDefined();
     });
 
-    it('should show error when post fails to load', fakeAsync(() => {
+    it('should show error when post fails to load', () => {
       mockBlogState.setError('Failed to load post');
       fixture.detectChanges();
-      tick();
-
       expect(component.error()).toBe('Failed to load post');
-    }));
+    });
   });
 
   describe('Comments Section', () => {
-    beforeEach(fakeAsync(() => {
+    beforeEach(() => {
       component.ngOnInit();
-      tick();
-    }));
+    });
 
     it('should display all comments', () => {
       const comments = component.comments();
@@ -129,7 +117,6 @@ describe('BlogDetail', () => {
     it('should track comments by id', () => {
       const comment = TEST_COMMENTS[0];
       const result = component.trackByCommentId(0, comment);
-
       expect(result).toBe(comment.id);
     });
 
@@ -148,10 +135,9 @@ describe('BlogDetail', () => {
         component.postId.set(1);
         component.onAddComment();
 
-        expect(mockRouter.navigate).toHaveBeenCalledWith(
-          ['/auth/login'],
-          { queryParams: { returnUrl: '/blogs/1/add-comment' } }
-        );
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/login'], {
+          queryParams: { returnUrl: '/blogs/1/add-comment' },
+        });
       });
     });
 
@@ -164,9 +150,7 @@ describe('BlogDetail', () => {
         component.postId.set(1);
         component.onAddComment();
 
-        expect(mockRouter.navigate).toHaveBeenCalledWith(
-          ['/blogs', 1, 'add-comment']
-        );
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/blogs', 1, 'add-comment']);
       });
     });
   });
@@ -183,38 +167,30 @@ describe('BlogDetail', () => {
   });
 
   describe('Route Parameter Changes', () => {
-    it('should reload post when route params change', fakeAsync(() => {
+    it('should reload post when route params change', () => {
       const postSpy = vi.spyOn(mockBlogState, 'loadPostById');
       const commentSpy = vi.spyOn(mockBlogState, 'loadComments');
 
       component.ngOnInit();
-      tick();
-
       mockActivatedRoute.params = of({ id: '2' });
       component.ngOnInit();
-      tick();
 
       expect(postSpy).toHaveBeenCalledWith(2);
       expect(commentSpy).toHaveBeenCalledWith(2);
-    }));
+    });
   });
 
   describe('Edge Cases', () => {
-    it('should handle invalid post id', fakeAsync(() => {
+    it('should handle invalid post id', () => {
       mockActivatedRoute.params = of({ id: 'invalid' });
-
       component.ngOnInit();
-      tick();
-
       expect(component.postId()).toBeNaN();
-    }));
+    });
 
-    it('should handle missing post', fakeAsync(() => {
+    it('should handle missing post', () => {
       mockBlogState.setError('Post not found');
       component.ngOnInit();
-      tick();
-
       expect(component.error()).toBe('Post not found');
-    }));
+    });
   });
 });

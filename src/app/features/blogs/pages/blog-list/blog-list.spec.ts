@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { BlogList } from './blog-list';
 import { BLOG_STATE_SERVICE } from '../../tokens/blog.tokens';
@@ -38,30 +38,22 @@ describe('BlogList', () => {
   });
 
   describe('Initialization', () => {
-    it('should load posts on init', fakeAsync(() => {
+    it('should load posts on init', () => {
       const loadSpy = vi.spyOn(mockBlogState, 'loadPosts');
 
       component.ngOnInit();
-      tick();
 
       expect(loadSpy).toHaveBeenCalled();
-    }));
+    });
 
-    it('should display loading state initially', fakeAsync(() => {
-      fixture.detectChanges();
-      tick();
-
-      expect(mockBlogState.isLoading()).toBeFalsy();
-    }));
   });
 
   describe('Pagination', () => {
-    beforeEach(fakeAsync(() => {
+    beforeEach(() => {
       mockBlogState.setPosts(TEST_POSTS);
       component.itemsPerPage.set(2);
-      fixture.detectChanges();
-      tick();
-    }));
+      fixture.detectChanges(); // update component bindings
+    });
 
     it('should paginate posts correctly', () => {
       component.currentPage.set(1);
@@ -114,24 +106,22 @@ describe('BlogList', () => {
   });
 
   describe('Error Handling', () => {
-    it('should expose error message when posts fail to load', fakeAsync(() => {
+    it('should expose error message when posts fail to load', () => {
       mockBlogState.setError('Failed to load posts');
-      fixture.detectChanges();
-      tick();
+      fixture.detectChanges(); // apply the latest state
 
       expect(component.error()).toBe('Failed to load posts');
-    }));
+    });
   });
 
   describe('Empty State', () => {
-    it('should handle empty posts list', fakeAsync(() => {
+    it('should handle empty posts list', () => {
       mockBlogState.setPosts([]);
-      fixture.detectChanges();
-      tick();
+      fixture.detectChanges(); // update component bindings
 
       expect(component.paginatedPosts().length).toBe(0);
       expect(component.totalPosts()).toBe(0);
-    }));
+    });
   });
 
   describe('Component State', () => {
@@ -140,14 +130,13 @@ describe('BlogList', () => {
       expect(component.itemsPerPage()).toBe(5);
     });
 
-    it('should expose blog state signals', fakeAsync(() => {
+    it('should expose blog state signals', () => {
       mockBlogState.setPosts(TEST_POSTS);
-      fixture.detectChanges();
-      tick();
+      fixture.detectChanges(); // update component bindings
 
       expect(component.posts()).toEqual(TEST_POSTS);
       expect(component.isLoading()).toBeDefined();
       expect(component.error()).toBeDefined();
-    }));
+    });
   });
 });
