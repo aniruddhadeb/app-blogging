@@ -84,12 +84,15 @@ describe('BlogList', () => {
     });
 
     it('should handle page change', () => {
-      spyOn(window, 'scrollTo');
+      const scrollSpy = spyOn(window, 'scrollTo') as jasmine.Spy;
 
       component.onPageChange(2);
 
       expect(component.currentPage()).toBe(2);
-      expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+      expect(scrollSpy).toHaveBeenCalledWith({
+        top: 0,
+        behavior: 'smooth',
+      });
     });
 
     it('should display all posts when items per page is greater than total', () => {

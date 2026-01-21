@@ -1,1 +1,141 @@
-<p>blog-detail works!</p>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Back -->
+    <button
+      hlmBtn
+      buttonVariants="ghost"
+      size="sm"
+      class="mb-6 gap-2"
+      (click)="goBack()"
+      (keydown.enter)="goBack()"
+      aria-label="Go back to blog list"
+    >
+      <svg
+        class="h-4 w-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"
+        />
+      </svg>
+      Back to Blogs
+    </button>
+
+    <!-- Loading -->
+    @if (isLoading()) {
+      <app-loading type="post"></app-loading>
+    }
+
+    <!-- Error -->
+    @if (error()) {
+      <section
+        hlmCard
+        class="border-destructive/50 bg-destructive/10 text-destructive"
+        role="alert"
+      >
+        <div hlmCardContent class="py-3">
+          <strong class="font-semibold">Error!</strong>
+          <span class="ml-1">{{ error() }}</span>
+        </div>
+      </section>
+    }
+
+    <!-- Post -->
+    @if (post() && !isLoading()) {
+
+      <article hlmCard class="mb-8">
+        <div hlmCardContent class="space-y-4">
+
+          <h1 class="text-3xl font-bold text-foreground">
+            {{ post()!.title }}
+          </h1>
+
+          <div class="text-sm text-muted-foreground">
+            Post #{{ post()!.id }}
+          </div>
+
+          <div class="prose dark:prose-invert max-w-none">
+            <p class="leading-relaxed">
+              {{ post()!.body }}
+            </p>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- Comments -->
+      <section hlmCard>
+        <div hlmCardContent class="space-y-6">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-bold text-foreground">
+              Comments ({{ comments().length }})
+            </h2>
+
+            <button
+              hlmBtn
+              size="sm"
+              (click)="onAddComment()"
+              (keydown.enter)="onAddComment()"
+              aria-label="Add a new comment"
+            >
+              Add Comment
+            </button>
+          </div>
+
+          <div hlmSeparator></div>
+
+          <!-- List -->
+          @if (comments().length > 0) {
+            <div class="space-y-6">
+
+              @for (comment of comments(); track trackByCommentId($index, comment)) {
+                <div
+                  class="border-l-4 pl-4 py-2"
+                  [class.border-primary]="comment.isUserAdded"
+                  [class.border-border]="!comment.isUserAdded"
+                >
+                  <div class="mb-1">
+                    <h3 class="font-semibold text-foreground">
+                      {{ comment.name }}
+
+                      @if (comment.isUserAdded) {
+                        <span
+                          class="ml-2 rounded-md bg-primary/10 px-2 py-0.5 text-xs text-primary"
+                        >
+                          Your comment
+                        </span>
+                      }
+                    </h3>
+
+                    <p class="text-sm text-muted-foreground">
+                      {{ comment.email }}
+                    </p>
+                  </div>
+
+                  <p class="text-muted-foreground">
+                    {{ comment.body }}
+                  </p>
+                </div>
+              }
+
+            </div>
+          } @else {
+            <p class="py-8 text-center text-muted-foreground">
+              No comments yet. Be the first to comment!
+            </p>
+          }
+
+        </div>
+      </section>
+    }
+
+  </div>
+</div>

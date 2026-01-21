@@ -5,10 +5,13 @@ import { Pagination } from '../../../../shared/components/pagination/pagination'
 import { Loading } from '../../../../shared/components/loading/loading';
 import { BLOG_STATE_SERVICE } from '../../tokens/blog.tokens';
 import { Post } from '../../../../core/models/post.model';
+import { HlmButton } from '@shared/ui/button';
+import { HlmCard, HlmCardContent } from '@shared/ui/card';
+import { HlmSeparator } from '@shared/ui/separator';
 
 @Component({
   selector: 'app-blog-list',
-  imports: [CommonModule, RouterLink, Pagination, Loading],
+  imports: [CommonModule, RouterLink, Pagination, Loading, HlmButton, HlmCard, HlmCardContent, HlmSeparator],
   templateUrl: './blog-list.html',
   styleUrl: './blog-list.css',
 })

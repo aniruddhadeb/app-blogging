@@ -54,6 +54,9 @@
       ],
       "@shared/ui/form-field": [
         "./src/app/shared/ui/form-field/src/index.ts"
+      ],
+      "@shared/ui/spinner": [
+        "./src/app/shared/ui/spinner/src/index.ts"
       ]
     }
   },

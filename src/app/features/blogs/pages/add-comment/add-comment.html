@@ -1,1 +1,98 @@
-<p>add-comment works!</p>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Add Comment</h1>
+      <p class="mt-2 text-gray-600 dark:text-gray-400">Share your thoughts on this post</p>
+    </div>
+
+    <!-- Form -->
+    <form
+      [formGroup]="commentForm"
+      (ngSubmit)="onSubmit()"
+      class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700 space-y-6"
+    >
+      <!-- Name -->
+      <hlm-form-field>
+        <label hlmLabel for="name">Name</label>
+
+        <input
+          hlmInput
+          id="name"
+          type="text"
+          control
+          formControlName="name"
+          placeholder="Your name"
+          [disabled]="isSubmitting()"
+        />
+
+        <hlm-error *ngIf="hasFieldError('name')" errorChildren>
+          {{ getFieldError('name') }}
+        </hlm-error>
+      </hlm-form-field>
+
+      <!-- Email -->
+      <hlm-form-field>
+        <label hlmLabel for="email">Email</label>
+
+        <input
+          hlmInput
+          id="email"
+          type="email"
+          control
+          formControlName="email"
+          placeholder="your.email@example.com"
+          [disabled]="isSubmitting()"
+        />
+
+        <hlm-hint>We’ll never share your email.</hlm-hint>
+
+        <hlm-error *ngIf="hasFieldError('email')" errorChildren>
+          {{ getFieldError('email') }}
+        </hlm-error>
+      </hlm-form-field>
+
+      <!-- Comment -->
+      <hlm-form-field>
+        <label hlmLabel for="body">Comment</label>
+
+        <textarea
+          hlmTextarea
+          textareaVariants="default"
+          id="body"
+          rows="6"
+          control
+          formControlName="body"
+          placeholder="Write your comment here..."
+          [disabled]="isSubmitting()"
+        ></textarea>
+
+        <hlm-hint>Minimum 10 characters.</hlm-hint>
+
+        <hlm-error *ngIf="hasFieldError('body')" errorChildren>
+          {{ getFieldError('body') }}
+        </hlm-error>
+      </hlm-form-field>
+
+      <!-- Actions -->
+      <div class="mt-8 flex justify-end gap-4">
+        <button
+          type="button"
+          hlmBtn
+          buttonVariants="outline"
+          size="sm"
+          (click)="onCancel()"
+          (keydown.enter)="onCancel()"
+          [disabled]="isSubmitting()"
+        >
+          Cancel
+        </button>
+
+        <button type="submit" hlmBtn buttonVariants="solid" size="sm" [disabled]="isSubmitting()">
+          <ng-container *ngIf="isSubmitting(); else submitText"> Submitting... </ng-container>
+          <ng-template #submitText> Submit Comment </ng-template>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

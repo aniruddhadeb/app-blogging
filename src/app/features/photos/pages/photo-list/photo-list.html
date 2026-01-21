@@ -1,1 +1,92 @@
-<p>photo-list works!</p>
+<div class="min-h-screen bg-muted/40 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Back Button -->
+    <button
+      hlmBtn
+      variant="ghost"
+      size="sm"
+      class="mb-6 flex items-center gap-2"
+      (click)="goBack()"
+      (keydown.enter)="goBack()"
+      aria-label="Go back to albums"
+    >
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Albums
+    </button>
+
+    <!-- Header -->
+    @if (album()) {
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-foreground">
+          {{ album()!.title }}
+        </h1>
+        <p class="mt-2 text-muted-foreground">{{ totalPhotos() }} photos in this album</p>
+      </div>
+    }
+
+    <!-- Loading -->
+    @if (isLoading()) {
+      <div class="flex justify-center py-16">
+        <hlm-spinner size="lg" />
+      </div>
+    }
+
+    <!-- Error -->
+    @if (error()) {
+      <div hlmAlert variant="destructive" class="mb-6">
+        <div hlmAlertTitle>Error</div>
+        <div hlmAlertDescription>
+          {{ error() }}
+        </div>
+      </div>
+    }
+
+    <!-- Photos -->
+    @if (!isLoading() && !error()) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @for (photo of paginatedPhotos(); track trackByPhotoId($index, photo)) {
+          <div
+            hlmCard
+            class="group overflow-hidden transition-all duration-300 hover:shadow-lg"
+            [attr.aria-label]="photo.title"
+          >
+            <div hlmCardHeader class="aspect-square overflow-hidden bg-muted">
+              <img
+                [src]="photo.thumbnailUrl"
+                [alt]="photo.title"
+                (error)="onImageError($event)"
+                loading="lazy"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+            </div>
+
+            <div hlmCardContent class="p-4">
+              <h2 class="text-sm font-medium line-clamp-2 text-foreground">
+                {{ photo.title }}
+              </h2>
+              <p class="mt-1 text-xs text-muted-foreground">Photo #{{ photo.id }}</p>
+            </div>
+          </div>
+        } @empty {
+          <div class="col-span-full py-16 text-center">
+            <p class="text-muted-foreground">No photos found in this album.</p>
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (totalPhotos() > itemsPerPage()) {
+        <div class="mt-10 flex justify-center">
+          <app-pagination
+            [totalItems]="totalPhotos()"
+            [itemsPerPage]="itemsPerPage()"
+            [currentPage]="currentPage()"
+            (pageChange)="onPageChangeEvent($event)"
+          />
+        </div>
+      }
+    }
+  </div>
+</div>

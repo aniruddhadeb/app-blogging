@@ -1,1 +1,99 @@
-<p>login works!</p>
+<div
+  class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-md w-full space-y-8">
+    <!-- Header -->
+    <div>
+      <h2
+        class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white"
+      >
+        Sign in to your account
+      </h2>
+      <p
+        class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400"
+      >
+        Or
+        <a
+          routerLink="/auth/signup"
+          class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+        >
+          create a new account
+        </a>
+      </p>
+    </div>
+
+    <!-- Form -->
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+      class="mt-8 space-y-6"
+    >
+      <!-- Global Error -->
+      @if (errorMessage()) {
+        <div
+          class="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400"
+          role="alert"
+          aria-live="polite"
+        >
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <!-- Username -->
+      <hlm-form-field>
+        <label hlmLabel for="username">Username</label>
+
+        <input
+          hlmInput
+          id="username"
+          type="text"
+          control
+          formControlName="username"
+          placeholder="Enter your username"
+          [disabled]="isSubmitting()"
+        />
+
+        <hlm-error *ngIf="hasFieldError('username')" errorChildren>
+          {{ getFieldError('username') }}
+        </hlm-error>
+      </hlm-form-field>
+
+      <!-- Password -->
+      <hlm-form-field>
+        <label hlmLabel for="password">Password</label>
+
+        <input
+          hlmInput
+          id="password"
+          type="password"
+          control
+          formControlName="password"
+          placeholder="Enter your password"
+          [disabled]="isSubmitting()"
+        />
+
+        <hlm-error *ngIf="hasFieldError('password')" errorChildren>
+          {{ getFieldError('password') }}
+        </hlm-error>
+      </hlm-form-field>
+
+      <!-- Submit -->
+      <div>
+        <button
+          type="submit"
+          hlmBtn
+          buttonVariants="solid"
+          size="sm"
+          class="w-full"
+          [disabled]="isSubmitting()"
+        >
+          @if (isSubmitting()) {
+            Signing in…
+          } @else {
+            Sign in
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

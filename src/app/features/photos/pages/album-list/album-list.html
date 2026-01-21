@@ -1,1 +1,100 @@
-<p>album-list works!</p>
+<div class="min-h-screen bg-muted/40 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight text-foreground">
+        Photo Albums
+      </h1>
+      <p class="mt-2 text-muted-foreground">
+        Browse through our collection of albums
+      </p>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <div class="flex justify-center py-16">
+        <hlm-spinner size="lg" />
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+      <div hlmAlert variant="destructive" class="mb-6">
+        <div hlmAlertTitle>Error</div>
+        <div hlmAlertDescription>
+          {{ error() }}
+        </div>
+      </div>
+    }
+
+    <!-- Albums Grid -->
+    @if (!isLoading() && !error()) {
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+      >
+        @for (album of albums(); track trackByAlbumId($index, album)) {
+
+          <a
+            [routerLink]="['/photos', album.id]"
+            class="group"
+            [attr.aria-label]="'View album: ' + album.title"
+          >
+            <div
+            hlmCard
+              class="h-full transition-all duration-300 hover:shadow-lg"
+            >
+              <!-- Image Placeholder -->
+              <div
+                hlmCardHeader
+                class="aspect-video bg-gradient-to-br from-primary to-primary/70
+                       flex items-center justify-center rounded-t-xl
+                       group-hover:scale-[1.02] transition-transform"
+              >
+                <svg
+                  class="w-16 h-16 text-primary-foreground/80"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16
+                       m-2-2l1.586-1.586a2 2 0 012.828 0L20 14
+                       m-6-6h.01
+                       M6 20h12a2 2 0 002-2V6
+                       a2 2 0 00-2-2H6a2 2 0 00-2 2v12
+                       a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+
+              <!-- Album Info -->
+              <div hlmCardContent class="p-4">
+                <h2
+                  class="text-lg font-semibold leading-snug line-clamp-2
+                         group-hover:text-primary transition-colors"
+                >
+                  {{ album.title }}
+                </h2>
+
+                <p class="mt-2 text-sm text-muted-foreground">
+                  Album #{{ album.id }}
+                </p>
+              </div>
+            </div>
+          </a>
+
+        } @empty {
+          <div class="col-span-full py-16 text-center">
+            <p class="text-muted-foreground">
+              No albums found.
+            </p>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,10 +1,15 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Blog Posts</h1>
-      <p class="mt-2 text-gray-600 dark:text-gray-400">Explore our latest articles and insights</p>
-    </div>
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-foreground">
+        Blog Posts
+      </h1>
+      <p class="mt-2 text-muted-foreground">
+        Explore our latest articles and insights
+      </p>
+    </header>
 
     <!-- Loading State -->
     @if (isLoading()) {
@@ -13,72 +18,110 @@
 
     <!-- Error State -->
     @if (error()) {
-      <div 
-        class="bg-red-50 dark:bg-red-900/20 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded relative" 
+      <section
+        hlmCard
+        class="border-destructive/50 bg-destructive/10 text-destructive"
         role="alert"
       >
-        <strong class="font-bold">Error!</strong>
-        <span class="block sm:inline"> {{ error() }}</span>
-      </div>
+        <div hlmCardContent class="py-3">
+          <strong class="font-semibold">Error!</strong>
+          <span class="ml-1">{{ error() }}</span>
+        </div>
+      </section>
     }
 
     <!-- Posts List -->
     @if (!isLoading() && !error()) {
       <div class="space-y-6">
+
         @for (post of paginatedPosts(); track trackByPostId($index, post)) {
-          <article 
-            class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 border border-gray-200 dark:border-gray-700"
+          <article
+            hlmCard
+            class="transition-shadow hover:shadow-md"
             [attr.aria-labelledby]="'post-title-' + post.id"
           >
-            <h2 
-              [id]="'post-title-' + post.id"
-              class="text-xl font-semibold text-gray-900 dark:text-white mb-2"
-            >
-              <a 
-                [routerLink]="['/blogs', post.id]"
-                class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            <div hlmCardContent class="space-y-4">
+
+              <!-- Title -->
+              <h2
+                [id]="'post-title-' + post.id"
+                class="text-xl font-semibold text-foreground"
               >
-                {{ post.title }}
-              </a>
-            </h2>
-            
-            <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
-              {{ post.body }}
-            </p>
-            
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-500 dark:text-gray-400">
-                Post #{{ post.id }}
-              </span>
-              
-              <a 
-                [routerLink]="['/blogs', post.id]"
-                class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium transition-colors"
-                [attr.aria-label]="'Read full post: ' + post.title"
-              >
-                Read more
-                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-              </a>
+                <a
+                  [routerLink]="['/blogs', post.id]"
+                  class="hover:text-primary transition-colors"
+                >
+                  {{ post.title }}
+                </a>
+              </h2>
+
+              <!-- Body -->
+              <p class="text-muted-foreground line-clamp-3">
+                {{ post.body }}
+              </p>
+
+              <div hlmSeparator></div>
+
+              <!-- Footer -->
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-muted-foreground">
+                  Post #{{ post.id }}
+                </span>
+
+                <a
+                  hlmBtn
+                  buttonVariants="link"
+                  size="sm"
+                  [routerLink]="['/blogs', post.id]"
+                  [attr.aria-label]="'Read full post: ' + post.title"
+                  class="gap-1"
+                >
+                  Read more
+                  <svg
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </a>
+              </div>
+
             </div>
           </article>
         } @empty {
-          <div class="text-center py-12">
-            <p class="text-gray-500 dark:text-gray-400">No blog posts found.</p>
-          </div>
+          <section
+            hlmCard
+            class="text-center"
+          >
+            <div hlmCardContent class="py-12">
+              <p class="text-muted-foreground">
+                No blog posts found.
+              </p>
+            </div>
+          </section>
         }
+
       </div>
 
       <!-- Pagination -->
       @if (totalPosts() > itemsPerPage()) {
-        <app-pagination
-          [totalItems]="totalPosts()"
-          [itemsPerPage]="itemsPerPage()"
-          [currentPage]="currentPage()"
-          (pageChange)="onPageChange($event)"
-        ></app-pagination>
+        <div class="mt-8">
+          <app-pagination
+            [totalItems]="totalPosts()"
+            [itemsPerPage]="itemsPerPage()"
+            [currentPage]="currentPage()"
+            (pageChange)="onPageChange($event)"
+          ></app-pagination>
+        </div>
       }
     }
+
   </div>
 </div>

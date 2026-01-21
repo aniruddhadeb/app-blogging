@@ -1,1 +1,162 @@
-<p>signup works!</p>
+<div
+  class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-md w-full space-y-8">
+    <!-- Header -->
+    <div>
+      <h2
+        class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white"
+      >
+        Create your account
+      </h2>
+
+      <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+        Already have an account?
+        <a
+          routerLink="/auth/login"
+          class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+        >
+          Sign in
+        </a>
+      </p>
+    </div>
+
+    <!-- Form -->
+    <form
+      [formGroup]="signupForm"
+      (ngSubmit)="onSubmit()"
+      class="mt-8 space-y-6"
+      novalidate
+    >
+      <!-- Global Error -->
+      @if (errorMessage()) {
+        <div
+          class="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400"
+          role="alert"
+          aria-live="polite"
+        >
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <!-- Global Success -->
+      @if (successMessage()) {
+        <div
+          class="rounded-md border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
+          role="status"
+          aria-live="polite"
+        >
+          {{ successMessage() }}
+        </div>
+      }
+
+      <!-- First Name -->
+      <hlm-form-field>
+        <label hlmLabel for="firstName">First name</label>
+
+        <input
+          hlmInput
+          id="firstName"
+          type="text"
+          control
+          formControlName="firstName"
+          placeholder="Enter your first name"
+        />
+
+        <hlm-error *ngIf="hasFieldError('firstName')" errorChildren>
+          {{ getFieldError('firstName') }}
+        </hlm-error>
+      </hlm-form-field>
+
+      <!-- Last Name -->
+      <hlm-form-field>
+        <label hlmLabel for="lastName">Last name</label>
+
+        <input
+          hlmInput
+          id="lastName"
+          type="text"
+          control
+          formControlName="lastName"
+          placeholder="Enter your last name"
+        />
+
+        <hlm-error *ngIf="hasFieldError('lastName')" errorChildren>
+          {{ getFieldError('lastName') }}
+        </hlm-error>
+      </hlm-form-field>
+
+      <!-- Username -->
+      <hlm-form-field>
+        <label hlmLabel for="username">Username</label>
+
+        <input
+          hlmInput
+          id="username"
+          type="text"
+          control
+          formControlName="username"
+          placeholder="Choose a username"
+        />
+
+        <hlm-error *ngIf="hasFieldError('username')" errorChildren>
+          {{ getFieldError('username') }}
+        </hlm-error>
+      </hlm-form-field>
+
+      <!-- Password -->
+      <hlm-form-field>
+        <label hlmLabel for="password">Password</label>
+
+        <input
+          hlmInput
+          id="password"
+          type="password"
+          control
+          formControlName="password"
+          placeholder="Choose a password"
+        />
+
+        <hlm-error *ngIf="hasFieldError('password')" errorChildren>
+          {{ getFieldError('password') }}
+        </hlm-error>
+      </hlm-form-field>
+
+      <!-- Confirm Password -->
+      <hlm-form-field>
+        <label hlmLabel for="confirmPassword">Confirm password</label>
+
+        <input
+          hlmInput
+          id="confirmPassword"
+          type="password"
+          control
+          formControlName="confirmPassword"
+          placeholder="Re-enter your password"
+        />
+
+        <hlm-error *ngIf="hasFieldError('confirmPassword')" errorChildren>
+          {{ getFieldError('confirmPassword') }}
+        </hlm-error>
+      </hlm-form-field>
+
+      <!-- Submit -->
+      <div>
+        <button
+          type="submit"
+          hlmBtn
+          buttonVariants="solid"
+          size="sm"
+          class="w-full"
+          [disabled]="isSubmitting()"
+        >
+          @if (isSubmitting()) {
+            Creating account…
+          } @else {
+            Sign up
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
